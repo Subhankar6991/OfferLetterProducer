@@ -1,0 +1,19 @@
+2022-02-17 19:06:24,758 - LoiProducer - INFO - function:main - line:380 - LoiProducer has started
+2022-02-17 19:06:26,149 - LoiProducer - DEBUG - function:main - line:389 - Candidate Information has been read from CandidateInformation.xlsx successfully
+2022-02-17 19:06:26,184 - LoiProducer - DEBUG - function:main - line:398 - Company Information has been read from CompanyInformation.xlsx successfully
+2022-02-17 19:06:26,188 - LoiProducer - DEBUG - function:populate_company_context - line:320 - Company Context has been generated successfully for the company Celebal Technologies Private Limited
+2022-02-17 19:06:26,250 - LoiProducer - DEBUG - function:configure_rich_text_web_link - line:127 - Rich Text for weblink has been created successfully
+2022-02-17 19:06:26,252 - LoiProducer - DEBUG - function:configure_rich_text_date_of_offer - line:168 - Rich Text for offer date has been created successfully
+2022-02-17 19:06:26,257 - LoiProducer - DEBUG - function:populate_candidate_context - line:263 - Candidate Context has been generated successfully for candidate number 0
+2022-02-17 19:06:28,916 - LoiProducer - DEBUG - function:render_and_produce_PDF - line:346 - The context information has been rendered successfully to the template for the candidate Subhankar Karmakar
+2022-02-17 19:06:28,988 - LoiProducer - DEBUG - function:render_and_produce_PDF - line:352 - The word document has been generated successfully for the candidate Subhankar Karmakar
+2022-02-17 19:06:39,611 - LoiProducer - DEBUG - function:render_and_produce_PDF - line:365 - The pdf loi has been generated successfully for the candidate Subhankar Karmakar
+2022-02-17 19:06:39,611 - LoiProducer - INFO - function:main - line:447 - LOI for Subhankar Karmakar has been generated
+2022-02-17 19:06:39,664 - LoiProducer - DEBUG - function:configure_rich_text_web_link - line:127 - Rich Text for weblink has been created successfully
+2022-02-17 19:06:39,664 - LoiProducer - DEBUG - function:configure_rich_text_date_of_offer - line:168 - Rich Text for offer date has been created successfully
+2022-02-17 19:06:39,680 - LoiProducer - DEBUG - function:populate_candidate_context - line:263 - Candidate Context has been generated successfully for candidate number 1
+2022-02-17 19:06:42,518 - LoiProducer - DEBUG - function:render_and_produce_PDF - line:346 - The context information has been rendered successfully to the template for the candidate Ayush Garg
+2022-02-17 19:06:42,584 - LoiProducer - DEBUG - function:render_and_produce_PDF - line:352 - The word document has been generated successfully for the candidate Ayush Garg
+2022-02-17 19:06:50,193 - LoiProducer - DEBUG - function:render_and_produce_PDF - line:365 - The pdf loi has been generated successfully for the candidate Ayush Garg
+2022-02-17 19:06:50,193 - LoiProducer - INFO - function:main - line:447 - LOI for Ayush Garg has been generated
+2022-02-17 19:06:50,193 - LoiProducer - INFO - function:main - line:451 - LoiProducer has successfully produced all the LOIs
