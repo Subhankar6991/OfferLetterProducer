@@ -1,14 +1,14 @@
 import re
-
-from docxtpl import DocxTemplate, InlineImage, RichText
 import datetime
 import locale
+import logging
+from typing import Any
 import docx2pdf
 from num2words import num2words
 import pandas as pd
-import logging
-from typing import Any
-from LoiProducerConfig import *
+
+from docxtpl import DocxTemplate, InlineImage, RichText
+from loi_producer_config import *
 
 
 def configure_logger(
@@ -174,9 +174,15 @@ def get_file_extension(file_name: str):
     Returns:
         The extension of the `file_name`
     """
-    pattern = re.compile(r"([\w\\]*?)(\w+)\.(\w+)")
-    match = re.match(pattern, file_name)
-    return match.group(3) if match else ""
+
+    try:
+        pattern = re.compile(r"([\w\\]*?)(\w+)\.(\w+)")
+        match = re.match(pattern, str(file_name))
+    except Exception:
+        print(file_name)
+        logger.exception("Error while getting the file extension")
+    finally:
+        return match.group(3) if match else ""
 
 
 def get_automapped_numeric_and_string_context(
@@ -441,7 +447,7 @@ def main(company_name: str) -> None:
 
         if candidate_context["candidateName"]:
             logger.info(
-                f"LOI for {candidate_context['candidateName']} has been generated"
+                "LOI for %s has been generated" % candidate_context["candidateName"]
             )
 
     logger.info("LoiProducer has successfully produced all the LOIs")

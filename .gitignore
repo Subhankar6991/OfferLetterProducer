@@ -3,12 +3,12 @@
 /task3_testing_config.zip
 /task3_Updated.zip
 /test.ipynb
-/output/document/Ayush Garg_OFFER_LETTER.docx
-/output/document/Subhankar Karmakar_OFFER_LETTER.docx
-/output/pdf/Ayush Garg_OFFER_LETTER.pdf
-/output/pdf/Subhankar Karmakar_OFFER_LETTER.pdf
 /templates/
 /.ipynb_checkpoints/
 /.mypy_cache/
 /.pytest_cache/
 /.idea/
+/__pycache__/
+/tests/__pycache__/
+/loi_producer.log
+/output/
