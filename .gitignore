@@ -1,13 +1,9 @@
 /venv/
-/task3_modular_unittest_logging_exception.zip
-/task3_testing_config.zip
-/task3_Updated.zip
 /test.ipynb
 /templates/
 /.ipynb_checkpoints/
 /.mypy_cache/
 /.pytest_cache/
-/.idea/
 /__pycache__/
 /tests/__pycache__/
 /loi_producer.log
