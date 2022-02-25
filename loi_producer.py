@@ -30,7 +30,6 @@ def configure_logger(
     Returns:
         The configured logger object
     """
-    logging.basicConfig(level=log_level)
     logger_object = logging.getLogger(logger_name)  # setting the logger name
     log_handler = logging.FileHandler(
         filename=f"{logger_name}.log", mode=file_mode
@@ -42,6 +41,7 @@ def configure_logger(
         log_handler
     )  # setting the logger with the created File Log Handler
     logger_object.propagate = False
+    logger_object.setLevel(log_level)
     return logger_object
 
 
@@ -84,7 +84,6 @@ def get_position_of_a_day(day: int) -> str:
     except ValueError:
         logger.exception("Day is out of range, should be between 1 and 31 inclusive")
     finally:
-
         return suffix
 
 
@@ -92,6 +91,7 @@ def configure_rich_text_web_link(
     template: DocxTemplate,
     company_dataframe: pd.DataFrame,
     company_name: str,
+    logger_object: logging.Logger,
 ) -> RichText:
     """
     This function is used for configuring the rich text object for
@@ -101,6 +101,7 @@ def configure_rich_text_web_link(
         template (DocxTemplate): The DocxTemplate object which holds template information
         company_dataframe (pd.DataFrame): The Pandas DataFrame containing company information
         company_name (str): The name of the company
+        logger_object (logging.Logger): The logger object which is used to log the information
 
     Returns:
         RichText: The configured RichText object
@@ -120,13 +121,14 @@ def configure_rich_text_web_link(
         underline=True,
         size=18,
     )
-    logger.debug("Rich Text for weblink has been created successfully")
+    logger_object.debug("Rich Text for weblink has been created successfully")
     return rich_text_object
 
 
 def configure_rich_text_date_of_offer(
     candidate_dataframe: pd.DataFrame,
     candidate_index: int,
+    logger_object: logging.Logger,
 ) -> RichText:
     """
     This function is used for configuring the rich text object for
@@ -136,6 +138,7 @@ def configure_rich_text_date_of_offer(
     Args:
         candidate_dataframe (pd.DataFrame): The Pandas DataFrame containing candidate information
         candidate_index (int): The row index of the candidate in the dataframe
+        logger_object (logging.Logger): The logger object which is used to log the information
 
     Returns:
         The configured RichText object
@@ -161,7 +164,7 @@ def configure_rich_text_date_of_offer(
         size=22,
         color="black",
     )
-    logger.debug("Rich Text for offer date has been created successfully")
+    logger_object.debug("Rich Text for offer date has been created successfully")
     return rich_text_object
 
 
@@ -174,15 +177,9 @@ def get_file_extension(file_name: str):
     Returns:
         The extension of the `file_name`
     """
-
-    try:
-        pattern = re.compile(r"([\w\\]*?)(\w+)\.(\w+)")
-        match = re.match(pattern, str(file_name))
-    except Exception:
-        print(file_name)
-        logger.exception("Error while getting the file extension")
-    finally:
-        return match.group(3) if match else ""
+    pattern = re.compile(r"([\w\\/]*?)(\w+)\.(\w+)")
+    match = re.match(pattern, file_name)
+    return match.group(3) if match else ""
 
 
 def get_automapped_numeric_and_string_context(
@@ -219,7 +216,10 @@ def get_automapped_numeric_and_string_context(
 
 
 def populate_candidate_context(
-    template: DocxTemplate, candidate_dataframe: pd.DataFrame, candidate_index: int
+    template: DocxTemplate,
+    candidate_dataframe: pd.DataFrame,
+    candidate_index: int,
+    logger_object: logging.Logger,
 ) -> dict:
     """
 
@@ -227,6 +227,7 @@ def populate_candidate_context(
         template (DocxTemplate): The DocxTemplate object which holds template information
         candidate_dataframe (pd.DataFrame): The Pandas DataFrame containing candidate information
         candidate_index (int): The row index of the candidate in the dataframe
+        logger_object (logging.Logger): The logger object which is used to log the information
 
     Returns:
         a dictionary populated with the details of the candidate information whose row index in the dataframe
@@ -262,19 +263,22 @@ def populate_candidate_context(
             }
         )
 
-        logger.debug(
+        logger_object.debug(
             f"Candidate Context has been generated successfully for candidate number {candidate_index}"
         )
     except KeyError:
-        logger.exception("Check keys to access data from the dataframe")
-    except Exception:
-        logger.exception("An unexpected error has occurred")
+        logger_object.exception("Check keys to access data from the dataframe")
+    # except Exception:
+    #     logger_object.exception("An unexpected error has occurred")
     finally:
         return context
 
 
 def populate_company_context(
-    template: DocxTemplate, company_dataframe: pd.DataFrame, company_name: str
+    template: DocxTemplate,
+    company_dataframe: pd.DataFrame,
+    company_name: str,
+    logger_object: logging.Logger,
 ) -> dict:
     """
     This function takes the Dataframe having company information in it along with
@@ -284,13 +288,14 @@ def populate_company_context(
     Args:
         template (DocxTemplate): The DocxTemplate object which holds template information
         company_dataframe (pd.DataFrame): The Pandas DataFrame containing company information
-        company_name (str): Name of the company
+        company_name (str): Name of the
+        logger_object (logging.Logger): The logger object which is used to log the information
 
     Returns:
         a dictionary populated with the details of the company information whose name matches
         with the parameter`company_name`
     """
-    context: dict = {}
+    context: dict = {"companyName": ""}
     try:
         context = (
             context
@@ -319,19 +324,22 @@ def populate_company_context(
                 ),
             }
         )
-        logger.debug(
+        logger_object.debug(
             f"Company Context has been generated successfully for the company {company_name}"
         )
     except KeyError:
-        logger.exception("Check keys to access data from the dataframe")
-    except Exception:
-        logger.exception("An unexpected error has occurred")
+        logger_object.exception("Check keys to access data from the dataframe")
+    # except Exception:
+    #     logger_object.exception("An unexpected error has occurred")
     finally:
         return context
 
 
 def render_and_produce_PDF(
-    template: DocxTemplate, context_information: dict, candidate_name: str
+    template: DocxTemplate,
+    context_information: dict,
+    candidate_name: str,
+    logger_object: logging.Logger,
 ) -> None:
     """
     This function renders the `context_information` in the template and produces
@@ -341,17 +349,19 @@ def render_and_produce_PDF(
         template (DocxTemplate): The DocxTemplate object which holds template information
         context_information (dict): Dictionary containing information that is to be rendered in the template
         candidate_name (str): Name of the candidate for which offer letter is to be generated
+        logger_object (logging.Logger): The logger object which is used to log the information
     """
+    candidate_name = candidate_name.strip().replace(" ", "_")
     template.render(
         context=context_information
     )  # rendering the context information in the template
-    logger.debug(
+    logger_object.debug(
         f"The context information has been rendered successfully to the template for the candidate {candidate_name}"
     )
     template.save(
         OUTPUT_DOCX_ROOT_PATH + candidate_name + OUTPUT_FILE_ENDING_FORMAT + ".docx"
     )  # saving the populated docx file
-    logger.debug(
+    logger_object.debug(
         f"The word document has been generated successfully for the candidate {candidate_name}"
     )
     docx2pdf.convert(
@@ -364,12 +374,12 @@ def render_and_produce_PDF(
         + OUTPUT_FILE_ENDING_FORMAT
         + ".pdf",
     )  # converting the produced *.docx files to PDF files
-    logger.debug(
+    logger_object.debug(
         f"The pdf loi has been generated successfully for the candidate {candidate_name}"
     )
 
 
-def main(company_name: str) -> None:
+def main(company_name: str, logger_object: logging.Logger) -> None:
     """
     This function takes the company name and produces LOIs in pdf format for that company.
     Find pdf files in `/output/pdf/` directory and
@@ -377,9 +387,10 @@ def main(company_name: str) -> None:
 
     Args:
         company_name (str): Name of the company for which LOIs should be produced
+        logger_object (logging.Logger): The logger object which is used to log the information
 
     """
-    logger.info("LoiProducer has started")
+    logger_object.info("LoiProducer has started")
     # Setting the locale to en_IN with character encoding UTF-8
     locale.setlocale(category=LOCALE_CATEGORY, locale=LOCALE_TYPE)
 
@@ -388,7 +399,7 @@ def main(company_name: str) -> None:
 
     # Reading the Candidate Information to a pandas dataframe
     candidate_information: pd.DataFrame = pd.read_excel(CANDIDATE_SHEET_PATH)
-    logger.debug(
+    logger_object.debug(
         "Candidate Information has been read from CandidateInformation.xlsx successfully"
     )
 
@@ -397,7 +408,7 @@ def main(company_name: str) -> None:
     company_information: pd.DataFrame = pd.read_excel(
         COMPANY_SHEET_PATH, index_col="companyName"
     )
-    logger.debug(
+    logger_object.debug(
         "Company Information has been read from CompanyInformation.xlsx successfully"
     )
     # getting the company information
@@ -405,6 +416,7 @@ def main(company_name: str) -> None:
         template=document,
         company_dataframe=company_information,
         company_name=COMPANY_NAME,
+        logger_object=logger_object,
     )
 
     for candidate_index in range(len(candidate_information)):
@@ -414,12 +426,14 @@ def main(company_name: str) -> None:
             template=document,
             company_dataframe=company_information,
             company_name=company_name,
+            logger_object=logger_object,
         )
 
         # Configuring Rich Text Object for date of offer
         rich_text_date_of_offer = configure_rich_text_date_of_offer(
             candidate_dataframe=candidate_information,
             candidate_index=candidate_index,
+            logger_object=logger_object,
         )
 
         # getting the candidate information
@@ -427,8 +441,8 @@ def main(company_name: str) -> None:
             template=document,
             candidate_dataframe=candidate_information,
             candidate_index=candidate_index,
+            logger_object=logger_object,
         )
-
         # merging both the candidate and company information along with
         # the rich text objects
         context = {
@@ -438,124 +452,27 @@ def main(company_name: str) -> None:
             "webSiteLink": rich_text_web_link,
             "offerDate": rich_text_date_of_offer,
         }
-
+        if __name__ != "__main__":
+            print()
+            print(context)
         render_and_produce_PDF(
             template=document,
             context_information=context,
             candidate_name=candidate_context["candidateName"] or "CORRUPTED",
+            logger_object=logger_object,
         )
 
         if candidate_context["candidateName"]:
-            logger.info(
+            logger_object.info(
                 "LOI for %s has been generated" % candidate_context["candidateName"]
             )
 
-    logger.info("LoiProducer has successfully produced all the LOIs")
+    logger_object.info("LoiProducer has successfully produced all the LOIs")
 
 
 if __name__ == "__main__":
     logger = configure_logger(logger_name=DEFAULT_LOGGER_NAME)
     try:
-        main(COMPANY_NAME)
+        main(company_name=COMPANY_NAME, logger_object=logger)
     except Exception:
         logger.exception("An unexpected error has occurred")
-
-# context = context | {
-#     "candidateName": dataframe.loc[row_identifier, "candidateName"],
-#     "candidateSignature": InlineImage(
-#         tpl=template,
-#         image_descriptor=dataframe.loc[
-#             row_identifier, "candidateSignature"  # path to the image
-#         ],
-#         height=Inches(0.42),
-#         width=Inches(1.09),
-#     ),
-#     "location": dataframe.loc[row_identifier, "location"],
-#     "designation": dataframe.loc[row_identifier, "designation"],
-#     "basic": locale.format_string(
-#         f="%d",
-#         val=dataframe.loc[row_identifier, "basic"],
-#         grouping=True,
-#     ),
-#     "hra": locale.format_string(
-#         f="%d",
-#         val=dataframe.loc[row_identifier, "hra"],
-#         grouping=True,
-#     ),
-#     "pfEmployee": locale.format_string(
-#         f="%d",
-#         val=dataframe.loc[row_identifier, "pfEmployee"],
-#         grouping=True,
-#     ),
-#     "pfEmployer": locale.format_string(
-#         f="%d",
-#         val=dataframe.loc[row_identifier, "pfEmployer"],
-#         grouping=True,
-#     ),
-#     "otherFixedAllowance": locale.format_string(
-#         f="%d",
-#         val=dataframe.loc[row_identifier, "otherFixedAllowance"],
-#         grouping=True,
-#     ),
-#     "totalFixedCash": locale.format_string(
-#         f="%d",
-#         val=dataframe.loc[row_identifier, "totalFixedCash"],
-#         grouping=True,
-#     ),
-#     "totalFixedCompensation": locale.format_string(
-#         f="%d",
-#         val=dataframe.loc[row_identifier, "totalFixedCompensation"],
-#         grouping=True,
-#     ),
-#     "medicalAllowance": locale.format_string(
-#         f="%d",
-#         val=dataframe.loc[row_identifier, "medicalAllowance"],
-#         grouping=True,
-#     ),
-#     "totalCtcPerMonth": locale.format_string(
-#         f="%d",
-#         val=dataframe.loc[row_identifier, "totalCtcPerMonth"],
-#         grouping=True,
-#     ),
-#     "totalCtcPerYear": locale.format_string(
-#         f="%d",
-#         val=dataframe.loc[row_identifier, "totalCtcPerYear"],
-#         grouping=True,
-#     ),
-#     "ctcInWord": num2words(
-#         number=dataframe.loc[row_identifier, "totalCtcPerYear"],
-#         lang="en_IN",
-#     )
-#     .title()  # title styling i.e. first letter of each word in upper case
-#     .replace(",", ""),
-#     "bonus": locale.format_string(
-#         f="%d",
-#         val=dataframe.loc[row_identifier, "bonus"],
-#         grouping=True,
-#     ),
-# }
-
-
-# context = context | {
-#     "companyLogo": InlineImage(
-#         tpl=template,
-#         image_descriptor=company_dataframe.loc[
-#             company_name, "companyLogo"
-#         ],  # path to the image
-#     ),
-#     "companyName": company_name,
-#     "companyAddress": company_dataframe.loc[company_name, "companyAddress"],
-#     "companyContact": company_dataframe.loc[company_name, "companyContact"],
-#     "country": company_dataframe.loc[company_name, "country"],
-#     "hrName": company_dataframe.loc[company_name, "hrName"],
-#     "hrMail": company_dataframe.loc[company_name, "hrMail"],
-#     "salesMail": company_dataframe.loc[company_name, "salesMail"],
-#     "hrSignature": InlineImage(
-#         tpl=template,
-#         image_descriptor=company_dataframe.loc[
-#             company_name, "hrSignature"
-#         ],  # path to the image
-#         height=Inches(0.57),
-#         width=Inches(1.31),
-#     ),
-# }
