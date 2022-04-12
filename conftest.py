@@ -93,4 +93,3 @@ def fake_document_template():
     return DocxTemplate(
         "tests/test_templates/test_loi_template.docx"
     )
-
